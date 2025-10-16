@@ -48,3 +48,32 @@ print("\nT-test Results:")
 print(f"Risk difference p-value = {risk_ttest.pvalue:.4f}")
 print(f"Reward difference p-value = {reward_ttest.pvalue:.4f}")
 print(f"Landing-to-food delay p-value = {delay_ttest.pvalue:.4f}")
+# Linear regression for Bat behaviours vs Season
+
+# Risk
+risk_model = smf.ols("risk ~ season_numeric", data=bat).fit()
+# Reward
+reward_model = smf.ols("reward ~ season_numeric", data=bat).fit()
+# Landing-to-food delay
+delay_model = smf.ols("bat_landing_to_food ~ season_numeric", data=bat).fit()
+
+print("\nLinear Regression Summaries:")
+print("Risk ~ Season")
+print(risk_model.summary())
+print("Reward ~ Season")
+print(reward_model.summary())
+print("Landing-to-food delay ~ Season")
+print(delay_model.summary())
+
+# Number of landings per season
+landing_counts = bat.groupby("season_label")["bat_landing_to_food"].count().reset_index()
+landing_counts.rename(columns={"bat_landing_to_food": "landing_count"}, inplace=True)
+
+plt.figure(figsize=(6,5))
+sns.barplot(x="season_label", y="landing_count", data=landing_counts, palette="muted")
+plt.title("Number of Bat Landings by Season")
+plt.text(0, landing_counts["landing_count"].max()*0.95,
+         f"Winter: {landing_counts['landing_count'][0]}, Spring: {landing_counts['landing_count'][1]}",
+         color='blue', fontsize=12)
+plt.savefig("bat_landings_by_season.png")
+plt.close()
