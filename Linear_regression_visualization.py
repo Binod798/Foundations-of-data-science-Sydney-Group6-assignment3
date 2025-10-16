@@ -77,3 +77,39 @@ plt.text(0, landing_counts["landing_count"].max()*0.95,
          color='blue', fontsize=12)
 plt.savefig("bat_landings_by_season.png")
 plt.close()
+
+# Visualizations with regression and annotations
+sns.set(style="whitegrid", palette="muted")
+
+# Risk
+plt.figure(figsize=(10,5))
+sns.boxplot(x="season_label", y="risk", data=bat, showfliers=False)
+sns.stripplot(x="season_label", y="risk", data=bat, color="black", alpha=0.5, jitter=True)
+sns.regplot(x="season_numeric", y="risk", data=bat, scatter=False, color="red")
+plt.title("Bat Risk by Season")
+plt.text(0.5, bat["risk"].max()*0.95, f"t-test p = {risk_ttest.pvalue:.4f}\nCoef = {risk_model.params['season_numeric']:.2f}",
+         ha='center', color='blue', fontsize=12)
+plt.savefig("bat_risk_by_season.png")
+plt.close()
+
+# Reward
+plt.figure(figsize=(10,5))
+sns.boxplot(x="season_label", y="reward", data=bat, showfliers=False)
+sns.stripplot(x="season_label", y="reward", data=bat, color="black", alpha=0.5, jitter=True)
+sns.regplot(x="season_numeric", y="reward", data=bat, scatter=False, color="red")
+plt.title("Bat Reward by Season")
+plt.text(0.5, bat["reward"].max()*0.95, f"t-test p = {reward_ttest.pvalue:.4f}\nCoef = {reward_model.params['season_numeric']:.2f}",
+         ha='center', color='blue', fontsize=12)
+plt.savefig("bat_reward_by_season.png")
+plt.close()
+
+# Landing-to-food delay
+plt.figure(figsize=(10,5))
+sns.boxplot(x="season_label", y="bat_landing_to_food", data=bat, showfliers=False)
+sns.stripplot(x="season_label", y="bat_landing_to_food", data=bat, color="black", alpha=0.5, jitter=True)
+sns.regplot(x="season_numeric", y="bat_landing_to_food", data=bat, scatter=False, color="red")
+plt.title("Bat Landing-to-Food Delay by Season")
+plt.text(0.5, bat["bat_landing_to_food"].max()*0.95, f"t-test p = {delay_ttest.pvalue:.4f}\nCoef = {delay_model.params['season_numeric']:.2f}",
+         ha='center', color='blue', fontsize=12)
+plt.savefig("bat_landing_to_food_by_season.png")
+plt.close()
