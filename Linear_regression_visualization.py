@@ -113,3 +113,62 @@ plt.text(0.5, bat["bat_landing_to_food"].max()*0.95, f"t-test p = {delay_ttest.p
          ha='center', color='blue', fontsize=12)
 plt.savefig("bat_landing_to_food_by_season.png")
 plt.close()
+
+# 3. Correlation between Rat Presence and Bat Landing Number
+# Convert dates
+# Define seasons
+def get_season(month):
+    if month in [12, 1, 2]:
+        return 'Summer'
+    elif month in [3, 4, 5]:
+        return 'Autumn'
+    elif month in [6, 7, 8]:
+        return 'Winter'
+    else:
+        return 'Spring'
+bat['start_time'] = pd.to_datetime(bat['start_time'])
+rat['time'] = pd.to_datetime(rat['time'])
+merged = pd.merge(bat, rat, on='month', how='inner')
+merged['season'] = merged['month'].apply(get_season)
+plt.figure(figsize=(7, 5))
+sns.scatterplot(x='rat_minutes', y='bat_landing_number', hue='season', data=merged, palette='viridis')
+plt.title('Effect of Rat Minutes on Bat Landings')
+plt.xlabel('Rat Minutes (per observation)')
+plt.ylabel('Number of Bat Landings')
+plt.savefig("rat_minutes_vs_bat_landing.png")
+plt.tight_layout()
+plt.close()
+
+# Linear regression for Investigation A
+# Regression 1: Bat Landings vs Rat Minutes
+if set(["rat_minutes", "bat_landing_number"]).issubset(rat.columns):
+    df_lr1 = rat[["rat_minutes", "bat_landing_number"]].dropna()
+    X = sm.add_constant(df_lr1["rat_minutes"])
+    y = df_lr1["bat_landing_number"]
+    model1 = sm.OLS(y, X).fit()  
+
+    plt.scatter(df_lr1["rat_minutes"], y, label="Observed", color="gray")
+    plt.plot(df_lr1["rat_minutes"], model1.predict(X), color="red", label="Fitted")
+    plt.title("Relationship Between Rat Activity Time and Bat Landings")
+    plt.xlabel("Rat Minutes")
+    plt.ylabel("Bat Landings")
+    plt.legend()
+    plt.savefig("Bat_landings_vs_Rat Minutes.png")
+    plt.close()
+
+# Regression 2: Bat Landings vs Rat Arrivals
+if set(["rat_arrival_number", "bat_landing_number"]).issubset(rat.columns):
+    df_lr2 = rat[["rat_arrival_number", "bat_landing_number"]].dropna()
+    X = sm.add_constant(df_lr2["rat_arrival_number"])
+    y = df_lr2["bat_landing_number"]
+    model2 = sm.OLS(y, X).fit()  
+
+    plt.scatter(df_lr2["rat_arrival_number"], y, color="blue", label="Observed")
+    plt.plot(df_lr2["rat_arrival_number"], model2.predict(X), color="red", label="Regression Line")
+    plt.title("Bat Landings vs Rat Arrivals")
+    plt.xlabel("Rat Arrivals")
+    plt.ylabel("Bat Landings")
+    plt.legend()
+    plt.savefig("bat_landing_vs_rat_arrivals.png")
+    plt.close()
+print("\n✅ Full Investigation B analysis completed successfully!")
